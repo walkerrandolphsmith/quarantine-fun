@@ -1,11 +1,13 @@
 const gameService = require('../services/game.service');
 
 exports.getCandidateGame = (req, res) => {
-    res.send(gameService.getCandidateGame());
+    const category = req.params.category;
+    res.send(gameService.getCandidateGame(category));
 }
 
 exports.replaceCard = (req, res) => {
-    res.send(gameService.replaceCard())
+    const category = req.params.category;
+    res.send(gameService.replaceCard(category))
 }
 
 exports.persistsGame = (req, res) => {

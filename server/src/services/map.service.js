@@ -10,7 +10,7 @@ exports.generateMap = function generateMap(first = BLUE) {
     const size = 25;
     const second = first === RED ? BLUE : RED;
     const emptyMap = [...Array(size).keys()];
-    const positions = fisherYates(emptyMap, 13);
+    const positions = fisherYates(emptyMap, 14);
 
     const map = emptyMap.map(_ => NEUTRAL);
     for(let i = 0; i <=6; i++) {

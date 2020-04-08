@@ -18,8 +18,10 @@ configureStaticResources(app);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.get('/api/getCandidateGame/:category', gameController.getCandidateGame);
 app.get('/api/getCandidateGame', gameController.getCandidateGame);
 app.get('/api/replaceCard', gameController.replaceCard);
+app.get('/api/replaceCard/:category', gameController.replaceCard);
 app.post('/api/createGame', gameController.persistsGame);
 app.get('/api/game/:id', gameController.getGame);
 app.get('/api/play/:id', gameController.playGame);

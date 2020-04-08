@@ -2,15 +2,15 @@ const { getCards } = require('./card.service');
 const { generateMap, revealMap } = require('./map.service');
 const Game = require('../models/Game');
 
-exports.getCandidateGame = () => {
+exports.getCandidateGame = (category = null) => {
     return {
-        cards: getCards(),
-        map: generateMap()
+        cards: getCards({ category }),
+        map: generateMap(Math.round(Math.random()))
     };
 }
 
-exports.replaceCard = () => {
-    const cards = getCards(1);
+exports.replaceCard = (category = null) => {
+    const cards = getCards({ numberOfCards: 1, category });
     const replacement = cards[0];
     return replacement;
 }
