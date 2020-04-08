@@ -10,7 +10,8 @@ exports.replaceCard = (req, res) => {
 
 exports.persistsGame = (req, res) => {
     gameService.persistsGame(req.body)
-        .then(game => res.send(game));
+        .then(game => res.send(game))
+        .catch(error => res.error(error));
 }
 
 exports.getGame = (req, res) => {
