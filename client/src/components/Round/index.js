@@ -23,10 +23,10 @@ function Board({ cards, onSelect, map, selections }) {
   )
 }
 
-export function Game({ client, selections }) {
+export function Round({ client, selections }) {
 
   const { pathname } = useLocation();
-  const gameId = pathname.split('/play/')[1];
+  const gameId = pathname.split('/round/')[1];
 
   const [game, setGame] = useState(null)
   useEffect(() => {

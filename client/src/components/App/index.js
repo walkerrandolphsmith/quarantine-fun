@@ -5,9 +5,10 @@ import {
   Route,
 } from "react-router-dom";
 import './App.css';
-import { CandidateGame } from '../CandidateGame';
-import { Game } from '../Game';
-import { GameMaster } from '../GameMaster';
+import { Architect } from '../Architect';
+import { Lobby } from '../Lobby';
+import { Round } from '../Round';
+import { SpyMaster } from '../SpyMaster';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 
 function getClient() {
@@ -95,14 +96,17 @@ export class App extends React.Component {
     return (
       <Router>
           <Switch>
-            <Route path="/game/:id">
-              <GameMaster client={client} selections={selections} />
+            <Route path="/spymaster/:id">
+              <SpyMaster client={client} selections={selections} />
             </Route>
-            <Route path="/play/:id">
-              <Game client={client} selections={selections} />
+            <Route path="/round/:id">
+              <Round client={client} selections={selections} />
+            </Route>
+            <Route path="/architect">
+              <Architect />
             </Route>
             <Route path="/">
-              <CandidateGame />
+              <Lobby />
             </Route>
           </Switch>
       </Router>

@@ -21,10 +21,10 @@ function Board({ cards, onSelect, map, selections, realtimeselections }) {
   )
 }
 
-export function GameMaster({ client, selections }) {
+export function SpyMaster({ client, selections }) {
 
   const { pathname } = useLocation();
-  const gameId = pathname.split('/game/')[1];
+  const gameId = pathname.split('/spymaster/')[1];
 
   const [game, setGame] = useState(null)
   useEffect(() => {

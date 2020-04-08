@@ -9,11 +9,11 @@ function GameLinks ({
 }) {
   if (gameId === null) return null;
 
-  const gameMasterHref = `/game/${gameId}`;
-  const playerHref = `/play/${gameId}`;
+  const spyMasterHref = `/spymaster/${gameId}`;
+  const playerHref = `/round/${gameId}`;
   const gameMasterLink = (
     <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-      <Link className="block w-full" to={gameMasterHref}>Game Masters</Link>
+      <Link className="block w-full" to={spyMasterHref}>Spy Masters</Link>
     </button>
   )
   const playerLink = (
@@ -77,7 +77,7 @@ function Board({ cards, onSelect, map }) {
   )
 }
 
-export function CandidateGame() {
+export function Architect() {
   const [game, setGame] = useState(null)
   const [gameId, setGameId] = useState(null)
   const [category, setCategory] = useState('');
@@ -127,6 +127,10 @@ export function CandidateGame() {
       })
   }
 
+  function copyGameCode () {
+    
+  }
+
   if(game === null) return <Loading />
   return (
     <Fragment>
@@ -134,6 +138,7 @@ export function CandidateGame() {
         createGame={createGame}
         onSelect={onSelectCategory}
       />
+      <span id="gameCode" onClick={copyGameCode}>{gameId}</span>
       <Board {...game} onSelect={replaceCard} />
       <GameLinks gameId={gameId} />
     </Fragment>
