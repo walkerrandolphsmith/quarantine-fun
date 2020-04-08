@@ -33,4 +33,11 @@ process.on('unhandledRejection', function(reason, p){
     error("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
 });
 
+process.on('uncaughtException', (err, origin) => {
+    error(
+      `Caught exception: ${err}\n` +
+      `Exception origin: ${origin}`
+    );
+});
+
 server.listen(port, _ => log(`Listening on port ${port}`));
