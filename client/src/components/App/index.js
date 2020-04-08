@@ -10,7 +10,7 @@ import { Game } from '../Game';
 import { GameMaster } from '../GameMaster';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 
-const client = new W3CWebSocket('ws://127.0.0.1:3003');
+const client = new W3CWebSocket(`ws://${window.location.hostname}:3003`);
 
 export class App extends React.Component {
   constructor() {
