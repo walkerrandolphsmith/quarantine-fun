@@ -7,6 +7,7 @@ const gameController = require('./controllers/game.controller');
 const { createSocketsManager } = require('./services/socketManager.service');
 const { configureDatabase } = require('./services/databaseManager.service');
 const { configureStaticResources } = require('./services/staticResource.service');
+const { log, error } = require('./services/log.service');
 const { port } = require('./environment');
 
 
@@ -28,4 +29,8 @@ const server = http.createServer(app);
 const socketManager = createSocketsManager(server);
 socketManager.on('cardselection', gameController.handleCardSelection)
 
-server.listen(port, () => console.log(`Listening on port ${port}`));
+process.on('unhandledRejection', function(reason, p){
+    error("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
+});
+
+server.listen(port, _ => log(`Listening on port ${port}`));

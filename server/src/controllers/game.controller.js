@@ -9,17 +9,22 @@ exports.replaceCard = (req, res) => {
 }
 
 exports.persistsGame = (req, res) => {
-    gameService.persistsGame(req.body).then(game => res.send(game));
+    gameService.persistsGame(req.body)
+        .then(game => res.send(game));
 }
 
 exports.getGame = (req, res) => {
     const gameId = req.params.id;
-    gameService.getGame(gameId).then(game => res.send(game))
+    gameService.getGame(gameId)
+        .then(game => res.send(game))
+        .catch(error => res.error(error))
 }
 
 exports.playGame = (req, res) => {
     const gameId = req.params.id;
-    gameService.playGame(gameId).then(game => res.send(game))
+    gameService.playGame(gameId)
+        .then(game => res.send(game))
+        .catch(error => res.error(error))
 }
 
 exports.handleCardSelection = (payload) => {
@@ -32,4 +37,5 @@ exports.handleCardSelection = (payload) => {
             return reply;
         })
     })
+    .catch(_ => {})
 }
