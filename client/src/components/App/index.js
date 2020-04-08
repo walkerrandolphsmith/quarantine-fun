@@ -10,7 +10,8 @@ import { Game } from '../Game';
 import { GameMaster } from '../GameMaster';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 
-const client = new W3CWebSocket(`ws://${window.location.hostname}:3003`);
+const scheme = window.location.href.startsWith("https") ? 'wss': 'ws';
+const client = new W3CWebSocket(`${scheme}://${window.location.hostname}:3003`);
 
 export class App extends React.Component {
   constructor() {
