@@ -37,13 +37,15 @@ exports.addPlayer = (gameId, name) => {
             if (game.phase > Phases.FUTURE) {
                 throw new Error("Can't join an active game")
             }
+            const spymasters = game.players.filter(player => player.role === Roles.SPYMASTER);
+            const role = spymasters.length >= 2 ? Roles.SPY : Roles.SPYMASTER;
             const bluePlayers = game.players.reduce((sum, elm) => sum += elm.team === Teams.BLUE ? 1 : 0, 0)
             const redPlayers = game.players.reduce((sum, elm) => sum += elm.team === Teams.RED ? 1 : 0, 0)
-            const teamAssignment = bluePlayers > redPlayers ? Teams.RED : Teams.BLUE;
+            const team = bluePlayers > redPlayers ? Teams.RED : Teams.BLUE;
             const player = {
                 name,
-                role: Roles.SPY,
-                team: teamAssignment
+                role,
+                team,
             }
             return Game.findByIdAndUpdate(gameId, { $push: { players: player } });
         })

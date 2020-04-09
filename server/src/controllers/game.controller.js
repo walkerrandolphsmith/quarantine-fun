@@ -56,8 +56,6 @@ exports.addPlayer = (req, res) => {
         }
     }
 
-    console.log('addPlayer', req.session.sessionsByGameId);
-
     return gameService.addPlayer(gameId, name)
         .then(_ => res.send({}))
         .catch(handleError(res))
