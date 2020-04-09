@@ -53,10 +53,10 @@ exports.addPlayer = (req, res) => {
         const session = req.session.sessionsByGameId[gameId];
         if (!session) {
             req.session.sessionsByGameId[gameId] = name;
-        } else {
-            handleError(res)(new Error("You are already playing a game"))
         }
     }
+
+    console.log('addPlayer', req.session.sessionsByGameId);
 
     return gameService.addPlayer(gameId, name)
         .then(_ => res.send({}))
