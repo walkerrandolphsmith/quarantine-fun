@@ -1,11 +1,13 @@
 const WebSocket = require('ws');
 
 exports.createSocketsManager = function(httpServer) {
-    const wsServer = new WebSocket.Server({ server: httpServer });
+    const wsServer = new WebSocket.Server({
+        server: httpServer,
+    });
 
     const listenersByMessageType = {};
 
-    wsServer.on('connection', (connection, req) => {
+    wsServer.on('connection', (connection) => {
         function broadcast(message) {
             wsServer.clients.forEach(client => {
                 client.send(JSON.stringify(message))
@@ -22,7 +24,9 @@ exports.createSocketsManager = function(httpServer) {
             try {
                 const payload = JSON.parse(message);
                 const handler = listenersByMessageType[payload.type];
-                handler(payload).then(reply => broadcast(reply));
+                handler(payload)
+                    .then(reply => broadcast(reply))
+                    .catch(error => broadcast({ type: 'error', reason: error.toString() }))
             }
             catch(e) {
     

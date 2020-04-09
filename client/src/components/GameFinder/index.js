@@ -1,0 +1,93 @@
+import React, { useState } from 'react';
+
+function addPlayer({ gameId, name, client }) {
+    return fetch('/api/addPlayer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': "application/json"
+        },
+        body: JSON.stringify({
+            gameId,
+            name,
+        }),
+      })
+      .then(response => {
+        client.send(JSON.stringify({
+            gameId,
+            type: 'playeradded',
+        }))
+        if (response.ok) {
+            client.send(JSON.stringify({
+                gameId,
+                type: 'playeradded',
+            }))
+            window.location.href = `/lobby/${gameId}`;
+        }
+      })
+}
+
+export function GameFinder ({ client }) {
+
+    const [gameCode, setGameCode] = useState('');
+    const [name, setName] = useState('');
+
+    function onGameCodeChange(event) {
+        setGameCode(event.target.value);
+    }
+
+    function onNameChange(event) {
+        setName(event.target.value);
+    }
+
+    function play() {
+        addPlayer({ gameId: gameCode, name, client });
+    }
+
+    function quickStart() {
+        fetch('/api/createGame', {
+            method: 'POST',
+            headers: {
+              'Content-Type': "application/json"
+            },
+            body: JSON.stringify({}),
+          })
+          .then(r => r.json())
+          .then(game => addPlayer({ gameId: game.id, name, client }))
+    }
+
+    const isQuickStartDisabled = name === '' || gameCode !== '';
+    const isPlayDisabled = name === '' && gameCode === '';
+
+    return (
+        <div className="h-screen w-screen flex">
+            <div className="w-full max-w-xs m-auto">
+                <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                    <div className="mb-6">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+                            Name
+                        </label>
+                        <input onChange={onNameChange} className="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="XXXXXXXXXX" />
+                        <p class="text-red-500 text-xs italic">Let us know who you are.</p>
+                    </div>
+                    <div className="mb-6">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+                            GAME CODE
+                        </label>
+                        <input onChange={onGameCodeChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="XXXXXXXXXX" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <button disabled={isPlayDisabled} onClick={play} className="disabled:opacity-75 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                            Join
+                        </button>
+                        <button disabled={isQuickStartDisabled} onClick={quickStart} className="disabled:opacity-75 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                            Quick Start
+                        </button>
+                    </div>
+                </div>
+                <p className="text-center text-gray-500 text-xs">
+                    &copy; Good Vibes Only
+                </p>
+            </div>
+        </div>
+    )
+}

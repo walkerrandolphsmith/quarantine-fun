@@ -1,3 +1,5 @@
+
+
 .App {
   text-align: center;
 }
@@ -35,4 +37,122 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.circle-container {
+  position: relative;
+  width: 20em;
+  height: 20em;
+  border-radius: 50%;
+  padding: 0;
+  list-style: none;
+  margin: 5em auto 0;
+  border: solid 5px grey;
+}
+.circle-container > * {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -3em;
+  width: 6em;
+  height: 6em;
+ 
+}
+.circle-container > *:nth-of-type(1) {
+  -webkit-transform: rotate(0deg) translate(10em) rotate(0deg);
+          transform: rotate(0deg) translate(10em) rotate(0deg);
+}
+.circle-container > *:nth-of-type(2) {
+  -webkit-transform: rotate(45deg) translate(10em) rotate(-45deg);
+          transform: rotate(45deg) translate(10em) rotate(-45deg);
+}
+.circle-container > *:nth-of-type(3) {
+  -webkit-transform: rotate(90deg) translate(10em) rotate(-90deg);
+          transform: rotate(90deg) translate(10em) rotate(-90deg);
+}
+.circle-container > *:nth-of-type(4) {
+  -webkit-transform: rotate(135deg) translate(10em) rotate(-135deg);
+          transform: rotate(135deg) translate(10em) rotate(-135deg);
+}
+.circle-container > *:nth-of-type(5) {
+  -webkit-transform: rotate(180deg) translate(10em) rotate(-180deg);
+          transform: rotate(180deg) translate(10em) rotate(-180deg);
+}
+.circle-container > *:nth-of-type(6) {
+  -webkit-transform: rotate(225deg) translate(10em) rotate(-225deg);
+          transform: rotate(225deg) translate(10em) rotate(-225deg);
+}
+.circle-container > *:nth-of-type(7) {
+  -webkit-transform: rotate(270deg) translate(10em) rotate(-270deg);
+          transform: rotate(270deg) translate(10em) rotate(-270deg);
+}
+.circle-container > *:nth-of-type(8) {
+  -webkit-transform: rotate(315deg) translate(10em) rotate(-315deg);
+          transform: rotate(315deg) translate(10em) rotate(-315deg);
+}
+
+.circle-container li > div {
+  max-width: 100%;
+  border-radius: 50%;
+  height: 100px;
+  width: 100px;
+  min-height: 100px;
+  min-width: 100px;
+  background-position: center center;
+  background-size: cover;
+  border: solid 5px tomato;
+  -webkit-transition: .15s;
+  transition: .15s;
+  position: relative;
+}
+
+.circle-container .player.blue div {
+  border: solid 5px blue;
+}
+
+.circle-container .player.red div {
+  border: solid 5px tomato;
+}
+
+.circle-container .player.spy.blue div {
+  background-image: url(./blue.png);
+}
+
+.circle-container .player.spy.red div {
+  background-image: url(./red.png);
+}
+
+.circle-container .empty-node div {
+  background-image: url(./death.png);
+}
+
+.circle-container .player.spymaster div {
+  background-image: url(./death.png);
+}
+
+.circle-container .empty-node div {
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
+}
+
+.circle-container .empty-node div:hover {
+  -webkit-filter: grayscale(0);
+          filter: grayscale(0);
+}
+
+.circle-container .player.blue .playertag {
+  border: solid 2px blue;
+}
+
+.circle-container .player.red .playertag {
+  border: solid 2px tomato;
+}
+.playertag {
+  display: none;
+}
+.circle-container .player .playertag {
+  display: block;
+  position: relative;
+  top: 45px;
 }

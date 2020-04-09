@@ -6,9 +6,9 @@ import {
 } from "react-router-dom";
 import './App.css';
 import { Architect } from '../Architect';
+import { GameFinder } from '../GameFinder';
 import { Lobby } from '../Lobby';
-import { Round } from '../Round';
-import { SpyMaster } from '../SpyMaster';
+import { Game } from '../Game';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 
 function getClient() {
@@ -25,6 +25,8 @@ export class App extends React.Component {
     this.state = {
       selections: {},
       client: null,
+      players: [],
+      winner: -1
     }
   }
 
@@ -73,7 +75,13 @@ export class App extends React.Component {
       try {
         var payload = JSON.parse(message.data);
         if (payload.type === "revealcard") {
-          this.setState(state => ({ selections: { ...state.selections, [payload.index]: payload.value } }))
+          this.setState(state => ({ selections: { ...state.selections, [payload.index]: payload.value }, winner: payload.winner }))
+        }
+        if (payload.type === "playeradded") {
+          this.setState(_ => ({ players: [...payload.players] }))
+        }
+        if (payload.type === 'gamestarted') {
+          window.location.href = `/game/${payload.gameId}`;
         }
       } catch (e) {
         console.log('This doesn\'t look like a valid JSON: ', message.data);
@@ -91,22 +99,24 @@ export class App extends React.Component {
     const {
       client,
       selections,
+      players,
+      winner,
     } = this.state;
 
     return (
       <Router>
           <Switch>
-            <Route path="/spymaster/:id">
-              <SpyMaster client={client} selections={selections} />
-            </Route>
-            <Route path="/round/:id">
-              <Round client={client} selections={selections} />
-            </Route>
             <Route path="/architect">
               <Architect />
             </Route>
+            <Route path="/lobby/:id">
+              <Lobby client={client} players={players} />
+            </Route>
+            <Route path="/game/:id">
+              <Game client={client} selections={selections} winner={winner} />
+            </Route>
             <Route path="/">
-              <Lobby />
+              <GameFinder client={client} />
             </Route>
           </Switch>
       </Router>
