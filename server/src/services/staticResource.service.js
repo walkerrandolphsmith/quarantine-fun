@@ -7,6 +7,5 @@ exports.configureStaticResources = function(app) {
     app.use('/', express.static(assetsPath))
     app.get('/architect', (_, res) => res.sendFile(entrypoint))
     app.get('/lobby/:id', (_, res) => res.sendFile(entrypoint))
-    app.get('/spymaster/:id', (_, res) => res.sendFile(entrypoint))
-    app.get('/round/:id', (_, res) => res.sendFile(entrypoint))
+    app.get('/game/:id', (_, res) => res.sendFile(entrypoint))
 }
