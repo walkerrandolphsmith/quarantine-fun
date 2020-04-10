@@ -101,18 +101,18 @@
   min-width: 100px;
   background-position: center center;
   background-size: cover;
-  border: solid 5px tomato;
+  border: solid 5px #c53030;
   -webkit-transition: .15s;
   transition: .15s;
   position: relative;
 }
 
 .circle-container .player.blue div {
-  border: solid 5px blue;
+  border: solid 5px #2b6cb0;
 }
 
 .circle-container .player.red div {
-  border: solid 5px tomato;
+  border: solid 5px #c53030;
 }
 
 .circle-container .player.spy.blue div {
@@ -142,11 +142,11 @@
 }
 
 .circle-container .player.blue .playertag {
-  border: solid 2px blue;
+  border: solid 2px #2b6cb0;
 }
 
 .circle-container .player.red .playertag {
-  border: solid 2px tomato;
+  border: solid 2px #c53030;
 }
 .playertag {
   display: none;

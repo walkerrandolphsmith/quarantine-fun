@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from "react-router-dom";
 import { Loading } from '../Loading';
+import { errorsByCode } from '../constants';
 
 export function Lobby({ client, players }) {
 
     const { pathname } = useLocation();
     const gameId = pathname.split('/lobby/')[1];
-
+    
+    const [error, setError] = useState(null);
     const [game, setGame] = useState(null)
+
     useEffect(
         () => {
             fetch(`/api/game/${gameId}`)
@@ -34,6 +37,8 @@ export function Lobby({ client, players }) {
                     type: 'gamestarted',
                 }));
                 window.location.href = `/game/${gameId}`;
+            } else {
+                return response.json().then(error => setError(errorsByCode[error.code]))
             }
             return response;
           });
@@ -70,11 +75,15 @@ export function Lobby({ client, players }) {
         </ul>
     )
 
-    const message = (() => {
+    const helpMessage = (() => {
         if (roster.length === 1) return 'find at least two more people to play.' 
         if (roster.length === 2) return 'find at least one more person to play.'
         return "You're ready to play!" 
     })();
+
+    const message = error
+        ? <p class="text-red-500 text-xs italic mt-4">{error.message}</p>
+        : <p className="text-gray-500 text-xs italic mt-4">{helpMessage}</p>
 
     return (
         <div className="h-screen w-screen flex">
@@ -90,7 +99,7 @@ export function Lobby({ client, players }) {
                         >
                             Ready to Play
                         </button>
-                        <p className="text-gray-500 text-xs italic mt-4">{message}</p>
+                        {message}
                     </div>
                 </div>
             </div>

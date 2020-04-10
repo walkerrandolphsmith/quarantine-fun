@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { getCards } = require('./card.service');
 const { generateMap, revealMap } = require('./map.service');
 const { Teams, Roles, Phases } = require('../constants');
@@ -17,7 +18,12 @@ exports.replaceCard = (category = null) => {
 }
 
 exports.persistsGame = (gameState) => {
-    const game = { ...gameState, phase: Phases.FUTURE };
+    const redCards = gameState.map.filter(card => card === Teams.RED);
+    const blueCards = gameState.map.filter(card => card === Teams.BLUE);
+
+    const firstTeam = redCards.length > blueCards.length ? Teams.RED : Teams.BLUE;
+
+    const game = { ...gameState, phase: Phases.FUTURE, firstTeam };
     const candidate = new Game(game);
     return candidate.save().then(game => ({ ...game, id: game._id }));
 }
@@ -34,8 +40,14 @@ exports.getGame = (gameId, playerId) => {
 exports.addPlayer = (gameId, name) => {
     return Game.findById(gameId)
         .then(game => {
+            if (game === null) {
+                throw new Error(3)
+            }
             if (game.phase > Phases.FUTURE) {
-                throw new Error("Can't join an active game")
+                throw new Error(2)
+            }
+            if (game.players.find(player => player.name === name)) {
+                throw new Error(0)
             }
             const spymasters = game.players.filter(player => player.role === Roles.SPYMASTER);
             const role = spymasters.length >= 2 ? Roles.SPY : Roles.SPYMASTER;
@@ -49,26 +61,41 @@ exports.addPlayer = (gameId, name) => {
             }
             return Game.findByIdAndUpdate(gameId, { $push: { players: player } });
         })
+        .catch(error => {
+            if (error instanceof mongoose.Error) {
+                throw new Error(1)
+            }
+            throw error;
+        })
 }
 
 exports.startGame = (gameId) => {
     return Game.findById(gameId)
         .then(game => {
-            if (game.phase >= Phases.ACTIVE) {
-                throw new Error("Can't start a started game")
+            if (game === null) {
+                throw new Error(3)
             }
-            if (game.players.length < 2) {
-                throw new Error("Requires at least three players");
+            if (game.phase >= Phases.ACTIVE) {
+                throw new Error(2)
+            }
+            if (game.players.length < 3) {
+                throw new Error(4);
             }
             const spymasters = game.players.filter(player => player.role === Roles.SPYMASTER);
 
             if (spymasters.length !== 2) {
-                throw new Error("There must be two spymasters");
+                throw new Error(5);
             }
             if (spymasters[0].team === spymasters[1].team) {
-                throw new Error("Spymasters must be on separate teams");
+                throw new Error(6);
             }
             return Game.findByIdAndUpdate(gameId, { phase: Phases.ACTIVE });
+        })
+        .catch(error => {
+            if (error instanceof mongoose.Error) {
+                throw new Error(7)
+            }
+            throw error;
         })
 }
 

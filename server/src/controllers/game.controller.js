@@ -1,17 +1,40 @@
 const gameService = require('../services/game.service');
-const logService = require('../services/log.service');
+const { log } = require('../services/log.service');
+const { Phases } = require('../constants');
 
-function getPlayerId (req) {
+function getPlayerName (req) {
     const gameId = req.params.id;
     const sessionsByGameId = req.session.sessionsByGameId || {};
-    return sessionsByGameId[gameId];
+    const name = sessionsByGameId[gameId];
+    return name;
 }
 
-function handleError (res) {
-    return error => {
-        logService.error(error)
-        res.status(400).send(error)
+exports.handleStaticRoute = (route, entryPoint) => (req, res) => {
+    const gameId = req.params.id;
+    if (!gameId) {
+        log(`LACKS GAMEID`);
+        res.redirect(301, '/');
     }
+    return gameService.getGame(gameId)
+        .then(game => {
+            if (game === null){
+                log(`NOT FOUND: ${gameId}`);
+                res.redirect(301, '/')
+            }
+            if (route === 'lobby' && game.phase >= Phases.ACTIVE) {
+                log(`LOBBY OF ACTIVE GAME: ${gameId}`);
+                res.redirect(301, `/game/${gameId}`)
+            }
+            if (route === 'game' && game.phase <= Phases.FUTURE) {
+                log(`PLAY INACTIVE GAME: ${gameId}`);
+                res.redirect(301, `/lobby/${gameId}`)
+            }
+            res.sendFile(entryPoint);
+        })
+        .catch(error => {
+            log(`UNKNOWN: ${gameId}`, error);
+            res.redirect(301, '/')
+        })
 }
 
 exports.getCandidateGame = (req, res) => {
@@ -24,25 +47,23 @@ exports.replaceCard = (req, res) => {
     res.send(gameService.replaceCard(category))
 }
 
-exports.persistsGame = (req, res) => {
+exports.persistsGame = (req, res, next) => {
     const isQuickStart = Object.keys(req.body).length < 1;
     const gameState = isQuickStart
         ? gameService.getCandidateGame()
         : req.body;
-    gameService.persistsGame({ ...gameState, winner: -1 })
+    return gameService.persistsGame({ ...gameState, winner: -1 })
         .then(game => res.send(game))
-        .catch(handleError(res))
 }
 
-exports.getGame = (req, res) => {
+exports.getGame = (req, res, next) => {
     const gameId = req.params.id;
-    const playerId = getPlayerId(req);
-    return gameService.getGame(gameId, playerId)
+    const playerName = getPlayerName(req);
+    return gameService.getGame(gameId, playerName)
         .then(game => res.send(game))
-        .catch(handleError(res))
 }
 
-exports.addPlayer = (req, res) => {
+exports.addPlayer = async (req, res, next) => {
     const { gameId, name } = req.body;
 
     if (!req.session.sessionsByGameId) {
@@ -56,21 +77,18 @@ exports.addPlayer = (req, res) => {
         }
     }
 
-    return gameService.addPlayer(gameId, name)
+    await gameService.addPlayer(gameId, name)
         .then(_ => res.send({}))
-        .catch(handleError(res))
 }
 
-exports.startGame = (req, res) => {
+exports.startGame = async (req, res, next) => {
     const { gameId } = req.body;
-    return gameService.startGame(gameId)
+    await gameService.startGame(gameId)
         .then(_ => res.send({}))
-        .catch(handleError(res))
 }
 
 exports.handleCardSelection = (payload) => {
     const { gameId, index } = payload;
-    const playerId = null;
     return gameService.handleCardSelection(gameId, index)
 }
 

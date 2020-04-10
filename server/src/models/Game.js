@@ -20,7 +20,8 @@ var scheme = new mongoose.Schema({
     selections: [Number],
     players: [playerScheme],
     phase: Number,
-    winner: Number
+    winner: Number,
+    firstTeam: Number,
 });
   
 module.exports = mongoose.model("Game", scheme);

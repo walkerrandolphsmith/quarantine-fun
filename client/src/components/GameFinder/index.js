@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { errorsByCode } from '../constants';
 
-function addPlayer({ gameId, name, client }) {
+function addPlayer({ gameId, name, client, setError }) {
     return fetch('/api/addPlayer', {
         method: 'POST',
         headers: {
@@ -12,16 +13,14 @@ function addPlayer({ gameId, name, client }) {
         }),
       })
       .then(response => {
-        client.send(JSON.stringify({
-            gameId,
-            type: 'playeradded',
-        }))
         if (response.ok) {
             client.send(JSON.stringify({
                 gameId,
                 type: 'playeradded',
             }))
             window.location.href = `/lobby/${gameId}`;
+        } else {
+            return response.json().then(error => setError(errorsByCode[error.code]))
         }
       })
 }
@@ -30,6 +29,7 @@ export function GameFinder ({ client }) {
 
     const [gameCode, setGameCode] = useState('');
     const [name, setName] = useState('');
+    const [error, setError] = useState(null);
 
     function onGameCodeChange(event) {
         setGameCode(event.target.value);
@@ -40,7 +40,7 @@ export function GameFinder ({ client }) {
     }
 
     function play() {
-        addPlayer({ gameId: gameCode, name, client });
+        addPlayer({ gameId: gameCode, name, client, setError });
     }
 
     function quickStart() {
@@ -52,11 +52,13 @@ export function GameFinder ({ client }) {
             body: JSON.stringify({}),
           })
           .then(r => r.json())
-          .then(game => addPlayer({ gameId: game.id, name, client }))
+          .then(game => addPlayer({ gameId: game.id, name, client, setError }))
     }
 
     const isQuickStartDisabled = name === '' || gameCode !== '';
     const isPlayDisabled = name === '' && gameCode === '';
+    const nameErrorMessage = error && error.field === 'name' && <p class="text-red-500 text-xs italic">{error.message}</p>
+    const gameCodeErrorMessage = error && error.field === 'gameCode' && <p class="text-red-500 text-xs italic">{error.message}</p>
 
     return (
         <div className="h-screen w-screen flex">
@@ -67,13 +69,14 @@ export function GameFinder ({ client }) {
                             Name
                         </label>
                         <input onChange={onNameChange} className="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="XXXXXXXXXX" />
-                        <p class="text-red-500 text-xs italic">Let us know who you are.</p>
+                        {nameErrorMessage}
                     </div>
                     <div className="mb-6">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
                             GAME CODE
                         </label>
                         <input onChange={onGameCodeChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="XXXXXXXXXX" />
+                        {gameCodeErrorMessage}
                     </div>
                     <div className="flex items-center justify-between">
                         <button disabled={isPlayDisabled} onClick={play} className="disabled:opacity-75 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">

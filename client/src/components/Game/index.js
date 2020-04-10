@@ -51,9 +51,29 @@ export function Game({ client, selections, winner }) {
 }, [winner])
 
   if(game == null) return <Loading />
+
+  const firstTeamBackground = winner !== -1
+    ? winner === 0 ? 'bg-blue-700': 'bg-red-700'
+    : game.firstTeam === 0 ? 'bg-blue-700': 'bg-red-700'
+  const nav = (
+    <nav className={`${firstTeamBackground} p-2 mt-0 fixed w-full z-10 top-0`}>
+        <div className="container mx-auto flex flex-wrap items-center">
+		    <div className="flex w-full md:w-1/2 justify-center md:justify-start text-white font-extrabold">
+				</div>
+			<div className="flex w-full pt-2 content-center justify-between md:w-1/2 md:justify-end">
+				<ul className="list-reset flex justify-between flex-1 md:flex-none items-center">
+				  
+				</ul>
+			</div>
+        </div>
+    </nav>
+  )
+
   return (
     <Fragment>
+      
       {winner !== -1 && <span>{winnerName}</span>}
+      {nav}
       <Board
         {...game}
         realtimeselections={selections}

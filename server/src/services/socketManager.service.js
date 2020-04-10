@@ -29,7 +29,7 @@ exports.createSocketsManager = function(httpServer) {
                     .catch(error => broadcast({ type: 'error', reason: error.toString() }))
             }
             catch(e) {
-    
+                broadcast({ type: 'error', reason: e.toString() });
             }
         });
     });
