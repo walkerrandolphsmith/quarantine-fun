@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Loading } from '../Loading';
 import { Grid } from '../Grid';
 import { Card } from '../Card';
+import { Timer } from '../Timer'
 
 function Board({ cards, onSelect, map, selections, realtimeselections }) {
   const picks = [...selections, ...Object.keys(realtimeselections)].map(selection => parseInt(selection));
@@ -30,6 +31,19 @@ export function Game({ client, selections, winner }) {
 
   const { pathname } = useLocation();
   const gameId = pathname.split('/game/')[1];
+
+  const [hasTimer, setHasTimer] = useState(false);
+  const [fiveMinutesFromNow, setFiveMinutesFromNow] = useState(null)
+
+  function startTimer() {
+    setHasTimer(true)
+    setFiveMinutesFromNow(new Date(new Date().getTime() + 5*60000))
+  }
+
+  function clearTimer() {
+    setHasTimer(false)
+    setFiveMinutesFromNow(null)
+  }
 
   const [game, setGame] = useState(null)
   useEffect(() => {
@@ -91,8 +105,8 @@ export function Game({ client, selections, winner }) {
     }))
   }
 
-  const replyButtons = hasWinner && (
-    <div className="flex items-center justify-center">
+  const replayButtons = hasWinner && (
+    <Fragment>
         <button
             onClick={playAgain}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -107,14 +121,41 @@ export function Game({ client, selections, winner }) {
         >
             Leave
         </button>
-    </div>
+      </Fragment>
+  );
+
+  const timer = hasTimer && (
+    <Fragment>
+      <Timer fiveMinutesFromNow={fiveMinutesFromNow}/>
+      <button
+            onClick={clearTimer}
+            className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded ml-4"
+            type="button"
+        >
+            Clear Timer
+        </button>
+    </Fragment>
   )
+
+  const startTimerButton = !hasTimer && (
+    <button
+          onClick={startTimer}
+          className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded ml-4"
+          type="button"
+      >
+          Start Timer
+      </button>
+  );
+
+  const buttons = hasWinner ? [replayButtons] : [timer, startTimerButton]
 
   return (
     <Fragment>
       {nav}
       <div className="mt-24">
-        {replyButtons}
+        <div className="flex items-center justify-center">
+          {buttons}
+        </div>
         <Board
           {...game}
           realtimeselections={selections}
