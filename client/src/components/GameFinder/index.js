@@ -56,7 +56,7 @@ export function GameFinder ({ client }) {
     }
 
     const isQuickStartDisabled = name === '' || gameCode !== '';
-    const isPlayDisabled = name === '' && gameCode === '';
+    const isPlayDisabled = name === '' || gameCode === '';
     const nameErrorMessage = error && error.field === 'name' && <p class="text-red-500 text-xs italic">{error.message}</p>
     const gameCodeErrorMessage = error && error.field === 'gameCode' && <p class="text-red-500 text-xs italic">{error.message}</p>
 
@@ -79,13 +79,24 @@ export function GameFinder ({ client }) {
                         {gameCodeErrorMessage}
                     </div>
                     <div className="flex items-center justify-between">
-                        <button disabled={isPlayDisabled} onClick={play} className="disabled:opacity-75 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                        <button
+                            disabled={isPlayDisabled}
+                            onClick={play}
+                            className={`${isPlayDisabled ? 'opacity-50 ' : ''}disabled:opacity-75 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline`}
+                            type="button"
+                        >
                             Join
                         </button>
-                        <button disabled={isQuickStartDisabled} onClick={quickStart} className="disabled:opacity-75 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                        <button
+                            disabled={isQuickStartDisabled}
+                            onClick={quickStart}
+                            className={`${isQuickStartDisabled ? 'opacity-50 ' : ''}disabled:opacity-75 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline`}
+                            type="button"
+                        >
                             Quick Start
                         </button>
                     </div>
+                    <p class="text-gray-500 text-xs italic mt-4">Join an existing game with a 'GAME CODE' or start a new game with 'Quick Start'</p>
                 </div>
                 <p className="text-center text-gray-500 text-xs">
                     &copy; Good Vibes Only

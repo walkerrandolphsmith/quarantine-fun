@@ -44,11 +44,13 @@ export function Lobby({ client, players }) {
           });
     }
 
-    const isDisabled = false;
-
+    
     if(game == null) return <Loading />
-
+    
     const roster = players.length <= 0 ? game.players : players;
+    const hasTwoSpyMasters = roster.filter(player => player.role === 'spymaster').length == 2;
+    const hasMinNumberOfPlayers = roster.length > 2
+    const isDisabled = !hasMinNumberOfPlayers || !hasTwoSpyMasters;
 
     const placeholders = [...Array(8).keys()].map((_, i) => roster[i])
 
@@ -94,7 +96,7 @@ export function Lobby({ client, players }) {
                         <button
                             disabled={isDisabled}
                             onClick={startGame}
-                            className="disabled:opacity-75 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-32 rounded focus:outline-none focus:shadow-outline"
+                            className={`${isDisabled ? 'opacity-50 ' : ''}disabled:opacity-75 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-32 rounded focus:outline-none focus:shadow-outline`}
                             type="button"
                         >
                             Ready to Play
