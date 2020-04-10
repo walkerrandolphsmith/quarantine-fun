@@ -73,12 +73,16 @@ export class App extends React.Component {
 
     client.onmessage = (message) => {
       try {
+        console.log('message received', message)
         var payload = JSON.parse(message.data);
         if (payload.type === "revealcard") {
           this.setState(state => ({ selections: { ...state.selections, [payload.index]: payload.value }, winner: payload.winner }))
         }
         if (payload.type === "playeradded") {
           this.setState(_ => ({ players: [...payload.players] }))
+        }
+        if (payload.type === "branch") {
+          window.location.href = `/lobby/${payload.gameId}`;
         }
         if (payload.type === 'gamestarted') {
           window.location.href = `/game/${payload.gameId}`;

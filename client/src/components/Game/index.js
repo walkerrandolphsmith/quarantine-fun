@@ -45,46 +45,88 @@ export function Game({ client, selections, winner }) {
     [gameId]
   );
 
-  const [winnerName, setWinnerName] = useState(null)
-  useEffect(() => {
-      setWinnerName(winner === 0 ? 'BLUE' : 'RED')
-}, [winner])
-
   if(game == null) return <Loading />
 
-  const firstTeamBackground = winner !== -1
-    ? winner === 0 ? 'bg-blue-700': 'bg-red-700'
+  const playersList = (teammates) => (
+      <ul className="playerlist flex">
+          {teammates.map((player, key) => {
+              const classNames = `player ${player.team === 0 ? 'blue' : 'red'} ${player.role}`;
+              return (
+                  <li key={key} className={classNames}>
+                      <div className="flex items-center justify-center bg-gray-300 text-white-700 text-sm font-bold">
+                          <span className="playertag inline-block bg-gray-200 rounded-full px-3 text-sm font-semibold text-gray-700">{player.name}</span>
+                      </div>
+                  </li>
+              )
+          })}
+      </ul>
+  )
+
+  const redPlayers = playersList(game.players.filter(player => player.team === 1))
+  const bluePlayers = playersList(game.players.filter(player => player.team === 0))
+
+  const winnerValue = game.winner >= 0 ? game.winner : winner;
+  const hasWinner = winnerValue >= 0;
+
+  const firstTeamBackground = hasWinner
+    ? winnerValue === 0 ? 'bg-blue-700': 'bg-red-700'
     : game.firstTeam === 0 ? 'bg-blue-700': 'bg-red-700'
   const nav = (
     <nav className={`${firstTeamBackground} p-2 mt-0 fixed w-full z-10 top-0`}>
-        <div className="container mx-auto flex flex-wrap items-center">
-		    <div className="flex w-full md:w-1/2 justify-center md:justify-start text-white font-extrabold">
-				</div>
-			<div className="flex w-full pt-2 content-center justify-between md:w-1/2 md:justify-end">
-				<ul className="list-reset flex justify-between flex-1 md:flex-none items-center">
-				  
-				</ul>
-			</div>
+        <div className="container mx-auto flex flex-wrap items-center justify-between">
+          {bluePlayers}
+          {redPlayers}
         </div>
     </nav>
   )
 
+  function leave() {
+    window.location.href = '/';
+  }
+
+  function playAgain() {
+    client.send(JSON.stringify({
+      type: 'branch',
+      gameId
+    }))
+  }
+
+  const replyButtons = hasWinner && (
+    <div className="flex items-center justify-center">
+        <button
+            onClick={playAgain}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="button"
+        >
+            Play Again
+        </button>
+        <button
+            onClick={leave}
+            className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded ml-4"
+            type="button"
+        >
+            Leave
+        </button>
+    </div>
+  )
+
   return (
     <Fragment>
-      
-      {winner !== -1 && <span>{winnerName}</span>}
       {nav}
-      <Board
-        {...game}
-        realtimeselections={selections}
-        onSelect={(index) => {
-          client.send(JSON.stringify({
-            index,
-            gameId,
-            type: 'cardselection',
-          }))
-        }}
-      />
+      <div className="mt-24">
+        {replyButtons}
+        <Board
+          {...game}
+          realtimeselections={selections}
+          onSelect={(index) => {
+            client.send(JSON.stringify({
+              index,
+              gameId,
+              type: 'cardselection',
+            }))
+          }}
+        />
+      </div>
     </Fragment>
   )
 }

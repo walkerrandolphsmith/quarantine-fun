@@ -92,6 +92,7 @@
           transform: rotate(315deg) translate(10em) rotate(-315deg);
 }
 
+.playerlist li > div,
 .circle-container li > div {
   max-width: 100%;
   border-radius: 50%;
@@ -107,51 +108,77 @@
   position: relative;
 }
 
-.circle-container .player.blue div {
+.circle-container li > div {
+  height: 100px;
+  width: 100px;
+  min-height: 100px;
+  min-width: 100px;
+}
+
+.playerlist li > div {
+  height: 50px;
+  width: 50px;
+  min-height: 50px;
+  min-width: 50px;
+}
+
+.playerlist .player .playertag {
+  display: block;
+  position: relative;
+  top: 25px;
+  display: none;
+}
+
+.playerlist .player:hover .playertag {
+  display: block;
+}
+
+.player.blue div {
   border: solid 5px #2b6cb0;
 }
 
-.circle-container .player.red div {
+.player.red div {
   border: solid 5px #c53030;
 }
 
-.circle-container .player.spy.blue div {
+.player.spy.blue div {
   background-image: url(./blue.png);
 }
 
-.circle-container .player.spy.red div {
+.player.spy.red div {
   background-image: url(./red.png);
 }
 
-.circle-container .empty-node div {
+.empty-node div {
   background-image: url(./death.png);
 }
 
-.circle-container .player.spymaster div {
+.player.spymaster div {
   background-image: url(./death.png);
 }
 
-.circle-container .empty-node div {
+.empty-node div {
   -webkit-filter: grayscale(100%);
   filter: grayscale(100%);
 }
 
-.circle-container .empty-node div:hover {
+.empty-node div:hover {
   -webkit-filter: grayscale(0);
           filter: grayscale(0);
 }
 
-.circle-container .player.blue .playertag {
+.player.blue .playertag {
   border: solid 2px #2b6cb0;
 }
 
-.circle-container .player.red .playertag {
+.player.red .playertag {
   border: solid 2px #c53030;
 }
 .playertag {
   display: none;
 }
-.circle-container .player .playertag {
+
+.player .playertag {
   display: block;
   position: relative;
   top: 45px;

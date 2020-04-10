@@ -106,3 +106,9 @@ exports.handleCyclePlayer = (payload) => {
 exports.handleGameStarted = (payload) => {
     return Promise.resolve({ type: 'gamestarted', gameId: payload.gameId })
 }
+
+exports.handleBranch = (payload) => {
+    const { gameId } = payload;
+    return gameService.branch(gameId)
+        .then(game => ({ type: 'branch', gameId: game.id }))
+}

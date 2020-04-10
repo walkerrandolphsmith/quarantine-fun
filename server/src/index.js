@@ -60,5 +60,6 @@ socketManager.on('cardselection', gameController.handleCardSelection)
 socketManager.on('playeradded', gameController.handlerPlayerAdded)
 socketManager.on('gamestarted', gameController.handleGameStarted)
 socketManager.on('cycleplayer', gameController.handleCyclePlayer)
+socketManager.on('branch', gameController.handleBranch)
 
 server.listen(port, _ => log(`Listening on port ${port}`));

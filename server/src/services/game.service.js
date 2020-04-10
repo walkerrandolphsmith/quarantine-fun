@@ -4,7 +4,7 @@ const { generateMap, revealMap } = require('./map.service');
 const { Teams, Roles, Phases } = require('../constants');
 const Game = require('../models/Game');
 
-exports.getCandidateGame = (category = null) => {
+const getCandidateGame = (category = null) => {
     return {
         cards: getCards({ category }),
         map: generateMap(Math.round(Math.random()))
@@ -17,7 +17,7 @@ exports.replaceCard = (category = null) => {
     return replacement;
 }
 
-exports.persistsGame = (gameState) => {
+const persistsGame = (gameState) => {
     const redCards = gameState.map.filter(card => card === Teams.RED);
     const blueCards = gameState.map.filter(card => card === Teams.BLUE);
 
@@ -137,6 +137,25 @@ exports.cyclePlayer = (gameId, name) => {
         })
 }
 
+exports.branch = gameId => {
+    return Game.findById(gameId)
+        .then(game => {
+            const { cards, map } = getCandidateGame();
+            const players = game.players.map(player => ({
+                name: player.name,
+                role: player.role,
+                team: player.team,
+            }))
+
+            const newGame = {
+                cards,
+                map,
+                players
+            }
+            return persistsGame(newGame)
+        })
+}
+
 exports.handleCardSelection = (gameId, selection) => {
     return Game
     .findByIdAndUpdate(gameId, { $push: { selections: selection } })
@@ -169,3 +188,6 @@ exports.handleCardSelection = (gameId, selection) => {
         })
     })
 }
+
+exports.getCandidateGame = getCandidateGame;
+exports.persistsGame = persistsGame;
