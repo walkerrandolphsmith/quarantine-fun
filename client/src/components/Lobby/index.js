@@ -112,8 +112,8 @@ export function Lobby({ client, players }) {
         : <p className="text-gray-500 text-xs italic mt-4">{helpMessage}</p>
 
     const copyMessage = (() => {
-        if (copyState === null) return 'Invite your friends with this game code:';
-        if (copyState) return 'Game code copied!'
+        if (copyState === null) return 'Invite your friends with this link:';
+        if (copyState) return 'Invitation copied!'
         return 'Try copy the code manually...'
     })();
 
@@ -131,7 +131,7 @@ export function Lobby({ client, players }) {
                             <input
                                 type="text"
                                 class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-r-none px-3 relative select-none outline-none cursor-default"
-                                value={game.id}
+                                value={`${window.location.origin}/join/${gameId}`}
                             />
                             <div class="flex -mr-px">
                                 <span
