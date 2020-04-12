@@ -78,7 +78,7 @@ exports.startGame = (gameId) => {
             if (game.phase >= Phases.ACTIVE) {
                 throw new Error(2)
             }
-            if (game.players.length < 3) {
+            if (game.players.length < 2) {
                 throw new Error(4);
             }
             return Game.findByIdAndUpdate(gameId, { phase: Phases.ACTIVE });
