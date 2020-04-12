@@ -2,13 +2,6 @@ const gameService = require('../services/game.service');
 const { log } = require('../services/log.service');
 const { Phases } = require('../constants');
 
-function getPlayerName (req) {
-    const gameId = req.params.id;
-    const sessionsByGameId = req.session.sessionsByGameId || {};
-    const name = sessionsByGameId[gameId];
-    return name;
-}
-
 exports.handleStaticRoute = (route, entryPoint) => (req, res) => {
     const gameId = req.params.id;
     if (!gameId) {
@@ -18,15 +11,15 @@ exports.handleStaticRoute = (route, entryPoint) => (req, res) => {
     return gameService.getGame(gameId)
         .then(game => {
             if (game === null){
-                log(`NOT FOUND: ${gameId}`);
+                log(`GAME NOT FOUND: ${gameId}`);
                 res.redirect(301, '/')
             }
-            if (route === 'lobby' && game.phase >= Phases.ACTIVE) {
-                log(`LOBBY OF ACTIVE GAME: ${gameId}`);
+            if (route !== 'game' && game.phase >= Phases.ACTIVE) {
+                log(`ATTEMPTING TO JOIN AN ACTIVE GAME: ${gameId}`);
                 res.redirect(301, `/game/${gameId}`)
             }
             if (route === 'game' && game.phase <= Phases.FUTURE) {
-                log(`PLAY INACTIVE GAME: ${gameId}`);
+                log(`CANNOT PLAY AN INACTIVE GAME: ${gameId}`);
                 res.redirect(301, `/lobby/${gameId}`)
             }
             res.sendFile(entryPoint);
@@ -47,7 +40,7 @@ exports.replaceCard = (req, res) => {
     res.send(gameService.replaceCard(category))
 }
 
-exports.persistsGame = (req, res, next) => {
+exports.persistsGame = (req, res) => {
     const isQuickStart = Object.keys(req.body).length < 1;
     const gameState = isQuickStart
         ? gameService.getCandidateGame()
@@ -56,16 +49,13 @@ exports.persistsGame = (req, res, next) => {
         .then(game => res.send(game))
 }
 
-exports.getGame = (req, res, next) => {
-    const gameId = req.params.id;
-    const playerName = getPlayerName(req);
-    return gameService.getGame(gameId, playerName)
-        .then(game => res.send(game))
+function getPlayerFromGameSession (req, gameId) {
+    const sessionsByGameId = req.session.sessionsByGameId || {};
+    const name = sessionsByGameId[gameId];
+    return name;
 }
 
-exports.addPlayer = async (req, res, next) => {
-    const { gameId, name } = req.body;
-
+function addPlayerToGameSession(req, gameId, name) {
     if (!req.session.sessionsByGameId) {
         req.session.sessionsByGameId = {
             [gameId]: name
@@ -76,12 +66,33 @@ exports.addPlayer = async (req, res, next) => {
             req.session.sessionsByGameId[gameId] = name;
         }
     }
+}
+
+exports.getGame = (req, res) => {
+    const gameId = req.params.id;
+    const name = getPlayerFromGameSession(req, gameId);
+    return gameService.getGame(gameId, name)
+        .then(game => res.send(game))
+}
+
+exports.joinGame = (req, res) => {
+    const { previousGameId, nextGameId } = req.body;
+    const name = getPlayerFromGameSession(req, previousGameId);
+
+    addPlayerToGameSession(req, nextGameId, name);
+    res.send({});
+}
+
+exports.addPlayer = async (req, res) => {
+    const { gameId, name } = req.body;
+
+    addPlayerToGameSession(req, gameId, name);
 
     await gameService.addPlayer(gameId, name)
         .then(_ => res.send({}))
 }
 
-exports.startGame = async (req, res, next) => {
+exports.startGame = async (req, res) => {
     const { gameId } = req.body;
     await gameService.startGame(gameId)
         .then(_ => res.send({}))
@@ -110,5 +121,9 @@ exports.handleGameStarted = (payload) => {
 exports.handleBranch = (payload) => {
     const { gameId } = payload;
     return gameService.branch(gameId)
-        .then(game => ({ type: 'branch', gameId: game.id }))
+        .then(game => ({
+            type: 'branch',
+            previousGameId: gameId,
+            nextGameId: game.id
+        }))
 }

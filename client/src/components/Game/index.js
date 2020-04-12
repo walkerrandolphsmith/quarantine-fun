@@ -124,7 +124,7 @@ export function Game({ client, selections, winner }) {
       </Fragment>
   );
 
-  const timer = hasTimer && (
+  const timer = !hasWinner && hasTimer && (
     <Fragment>
       <Timer fiveMinutesFromNow={fiveMinutesFromNow}/>
       <button
@@ -137,7 +137,7 @@ export function Game({ client, selections, winner }) {
     </Fragment>
   )
 
-  const startTimerButton = !hasTimer && (
+  const startTimerButton = !hasWinner && !hasTimer && (
     <button
           onClick={startTimer}
           className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded ml-4"
@@ -147,14 +147,14 @@ export function Game({ client, selections, winner }) {
       </button>
   );
 
-  const buttons = hasWinner ? [replayButtons] : [timer, startTimerButton]
-
   return (
     <Fragment>
       {nav}
       <div className="mt-24">
         <div className="flex items-center justify-center">
-          {buttons}
+          {replayButtons}
+          {timer}
+          {startTimerButton}
         </div>
         <Board
           {...game}

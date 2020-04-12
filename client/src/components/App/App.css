@@ -149,10 +149,6 @@
   background-image: url(./red.png);
 }
 
-.empty-node div {
-  background-image: url(./death.png);
-}
-
 .player.spymaster div {
   background-image: url(./death.png);
 }

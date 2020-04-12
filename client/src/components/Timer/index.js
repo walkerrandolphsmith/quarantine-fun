@@ -27,7 +27,7 @@ export function Timer({ fiveMinutesFromNow }) {
 
     Object.keys(timeLeft).forEach(interval => {
         timerComponents.push(
-        <span className="ml-2">
+        <span className="ml-2" key={interval}>
             {timeLeft[interval]} {interval}
         </span>
         );

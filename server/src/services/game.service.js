@@ -81,14 +81,6 @@ exports.startGame = (gameId) => {
             if (game.players.length < 3) {
                 throw new Error(4);
             }
-            const spymasters = game.players.filter(player => player.role === Roles.SPYMASTER);
-
-            if (spymasters.length !== 2) {
-                throw new Error(5);
-            }
-            if (spymasters[0].team === spymasters[1].team) {
-                throw new Error(6);
-            }
             return Game.findByIdAndUpdate(gameId, { phase: Phases.ACTIVE });
         })
         .catch(error => {

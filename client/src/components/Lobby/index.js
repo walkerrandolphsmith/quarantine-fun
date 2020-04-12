@@ -48,9 +48,8 @@ export function Lobby({ client, players }) {
     if(game == null) return <Loading />
     
     const roster = players.length <= 0 ? game.players : players;
-    const hasTwoSpyMasters = roster.filter(player => player.role === 'spymaster').length == 2;
     const hasMinNumberOfPlayers = roster.length > 2
-    const isDisabled = !hasMinNumberOfPlayers || !hasTwoSpyMasters;
+    const isDisabled = !hasMinNumberOfPlayers;
 
     const placeholders = [...Array(8).keys()].map((_, i) => roster[i])
 

@@ -4,7 +4,6 @@ const BLUE = 0;
 const RED = 1;
 const DEATH = 2;
 const NEUTRAL = -1;
-const UNKNOWN = 3;
 
 const GetCardColor = (owner) => {
     if (owner === BLUE) return 'bg-blue-700';

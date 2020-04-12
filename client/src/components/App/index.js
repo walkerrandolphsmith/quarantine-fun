@@ -73,7 +73,6 @@ export class App extends React.Component {
 
     client.onmessage = (message) => {
       try {
-        console.log('message received', message)
         var payload = JSON.parse(message.data);
         if (payload.type === "revealcard") {
           this.setState(state => ({ selections: { ...state.selections, [payload.index]: payload.value }, winner: payload.winner }))
@@ -82,7 +81,24 @@ export class App extends React.Component {
           this.setState(_ => ({ players: [...payload.players] }))
         }
         if (payload.type === "branch") {
-          window.location.href = `/lobby/${payload.gameId}`;
+          const { previousGameId, nextGameId } = payload;
+          fetch(`/api/join`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                previousGameId,
+                nextGameId
+              })
+            })
+            .then(r => r.json())
+            .then(_ => {
+              window.location.href = `/lobby/${nextGameId}`;
+            })
+            .catch(error => {
+              console.log(error)
+            })
         }
         if (payload.type === 'gamestarted') {
           window.location.href = `/game/${payload.gameId}`;
@@ -115,6 +131,9 @@ export class App extends React.Component {
             </Route>
             <Route path="/lobby/:id">
               <Lobby client={client} players={players} />
+            </Route>
+            <Route path="/join/:id">
+              <GameFinder client={client} hasInvitation />
             </Route>
             <Route path="/game/:id">
               <Game client={client} selections={selections} winner={winner} />
