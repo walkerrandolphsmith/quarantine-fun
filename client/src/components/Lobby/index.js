@@ -51,18 +51,8 @@ export function Lobby({ client, players }) {
     }
 
     function copyGameCode(event) {
-        const textArea = document.createElement("textarea");
-        document.body.appendChild(textArea);
-
-        if (event.target.select) {
-            event.target.select()
-        }
-        else {
-            textArea.value = `${window.location.origin}/join/${gameId}`;
-            textArea.focus();
-            textArea.select();
-        }
-
+        const invitationLink = document.getElementById('invitation-link');
+        invitationLink.select()
         let wasSuccessful = false;
         try {
             wasSuccessful = document.execCommand("copy")
@@ -70,9 +60,6 @@ export function Lobby({ client, players }) {
             wasSuccessful = false;
         }
         setCopyState(wasSuccessful);
-
-        document.body.removeChild(textArea);
-
         setTimeout(resetCopyState, 2500);
     }
 
@@ -135,6 +122,7 @@ export function Lobby({ client, players }) {
                         </label>
                         <div class="flex flex-wrap items-stretch w-full mb-4 relative shadow rounded">
                             <input
+                                id="invitation-link"
                                 type="text"
                                 class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-r-none px-3 relative select-all outline-none cursor-default"
                                 onClick={copyGameCode}
