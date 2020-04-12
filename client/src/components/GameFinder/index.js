@@ -59,7 +59,7 @@ export function GameFinder ({ client, hasInvitation }) {
     }
 
     const isDisabled = name === '';
-    const nameErrorMessage = error && error.field === 'name' && <p class="text-red-500 text-xs italic">{error.message}</p>
+    const nameErrorMessage = error && error.field === 'name' && <p className="text-red-500 text-xs italic">{error.message}</p>
 
     const joinButton = hasInvitation && (
         <button
@@ -102,7 +102,7 @@ export function GameFinder ({ client, hasInvitation }) {
                         />
                         {nameErrorMessage}
                     </div>
-                    <p class="text-gray-500 text-xs italic mb-4">{helpText}</p>
+                    <p className="text-gray-500 text-xs italic mb-4">{helpText}</p>
                     <div className="flex items-center justify-center">
                         {joinButton}
                         {createButton}

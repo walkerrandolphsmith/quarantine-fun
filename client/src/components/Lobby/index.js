@@ -120,17 +120,17 @@ export function Lobby({ client, players }) {
                         <label className="block text-gray-700 text-sm mb-2" htmlFor="gameCode">
                             {copyMessage}
                         </label>
-                        <div class="flex flex-wrap items-stretch w-full mb-4 relative shadow rounded">
+                        <div className="flex flex-wrap items-stretch w-full mb-4 relative shadow rounded">
                             <input
                                 id="invitation-link"
                                 type="text"
-                                class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-r-none px-3 relative select-all outline-none cursor-default"
+                                className="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-r-none px-3 relative select-all outline-none cursor-default"
                                 onClick={copyGameCode}
                                 value={`${window.location.origin}/join/${gameId}`}
                             />
-                            <div class="flex -mr-px">
+                            <div className="flex -mr-px">
                                 <span
-                                    class="flex items-center leading-normal bg-grey-lighter rounded rounded-l-none border border-l-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm cursor-pointer"
+                                    className="flex items-center leading-normal bg-grey-lighter rounded rounded-l-none border border-l-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm cursor-pointer"
                                     onClick={copyGameCode}
                                 >
                                     Copy
