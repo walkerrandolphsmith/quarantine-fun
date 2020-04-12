@@ -50,12 +50,18 @@ export function Lobby({ client, players }) {
         setCopyState(null);
     }
 
-    function copyGameCode() {
+    function copyGameCode(event) {
         const textArea = document.createElement("textarea");
-        textArea.value = `${window.location.origin}/join/${gameId}`;
         document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
+
+        if (event.target.select) {
+            event.target.select()
+        }
+        else {
+            textArea.value = `${window.location.origin}/join/${gameId}`;
+            textArea.focus();
+            textArea.select();
+        }
 
         let wasSuccessful = false;
         try {
@@ -73,7 +79,7 @@ export function Lobby({ client, players }) {
     if(game == null) return <Loading />
 
     const roster = players.length <= 0 ? game.players : players;
-    const hasMinNumberOfPlayers = roster.length > 2
+    const hasMinNumberOfPlayers = roster.length > 1
     const isDisabled = !hasMinNumberOfPlayers;
 
     const placeholders = [...Array(8).keys()].map((_, i) => roster[i])
@@ -130,7 +136,8 @@ export function Lobby({ client, players }) {
                         <div class="flex flex-wrap items-stretch w-full mb-4 relative shadow rounded">
                             <input
                                 type="text"
-                                class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-r-none px-3 relative select-none outline-none cursor-default"
+                                class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-r-none px-3 relative select-all outline-none cursor-default"
+                                onClick={copyGameCode}
                                 value={`${window.location.origin}/join/${gameId}`}
                             />
                             <div class="flex -mr-px">
