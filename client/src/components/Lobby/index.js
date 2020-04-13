@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import debounce from 'lodash.debounce';
 import { Loading } from '../Loading';
 import { errorsByCode } from '../constants';
+import './Lobby.css';
 
 export function Lobby({ client, players }) {
 
@@ -72,22 +73,32 @@ export function Lobby({ client, players }) {
     const placeholders = [...Array(8).keys()].map((_, i) => roster[i])
 
     const playersList = (
-        <ul className="circle-container">
+        <ul className="circle-container relative rounded-full list-none mt-20 mr-auto mb-0 border-solid border-4 border-gray-700 p-0">
             {placeholders.map((player, key) => {
-                const classNames = player ? `player ${player.team === 0 ? 'blue' : 'red'} ${player.role} cursor-pointer` : 'empty-node';
+                if (!player) return (
+                    <li key={key} className="-m-12 block absolute w-24 h-24">
+                        <div className="w-24 h-24 relative flex items-center justify-center bg-gray-300 text-white-700 text-sm font-bold duration-150 border-solid border-4 rounded-full hover:border-red-700 border-gray-700">
+                            <span className="hidden inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700"></span>
+                        </div>
+                    </li>
+                )
                 const cyclePlayer = _ => {
-                    console.log('cycle player')
-                    if (!player) return;
                     client.send(JSON.stringify({
                         type: 'cycleplayer',
                         gameId,
                         name: player.name
                     }))
                 }
+                const borderClasses = `border-solid rounded-full ${player.team === 0 ? 'border-blue-700' : 'border-red-700'}`;
                 return (
-                    <li key={key} className={classNames} onClick={debounce(cyclePlayer, 250)}>
-                        <div className="flex items-center justify-center bg-gray-300 text-white-700 text-sm font-bold">
-                            <span className="playertag inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">{player && player.name}</span>
+                    <li key={key} className={`-m-12 cursor-pointer block absolute w-24 h-24`} onClick={debounce(cyclePlayer, 250)}>
+                        <div className={`w-24 h-24 relative flex items-center justify-center bg-gray-300 text-white-700 text-sm font-bold duration-150 border-4 ${borderClasses}`}>
+                            <span className="flex items-center justify-center absolute uppercase text-sm font-bold text-gray-700 block w-full h-full">
+                                {player.role}
+                            </span>
+                            <span className={`mt-24 block relative bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 border-2 ${borderClasses}`}>
+                                {player.name}
+                            </span>
                         </div>
                     </li>
                 )

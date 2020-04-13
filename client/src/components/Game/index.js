@@ -4,6 +4,7 @@ import { Loading } from '../Loading';
 import { Grid } from '../Grid';
 import { Card } from '../Card';
 import { Timer } from '../Timer'
+import './Game.css';
 
 function Board({ cards, onSelect, map, selections, realtimeselections }) {
   const picks = [...selections, ...Object.keys(realtimeselections)].map(selection => parseInt(selection));
@@ -62,13 +63,18 @@ export function Game({ client, selections, winner }) {
   if(game == null) return <Loading />
 
   const playersList = (teammates) => (
-      <ul className="playerlist flex">
+      <ul className="inline-flex">
           {teammates.map((player, key) => {
-              const classNames = `player ${player.team === 0 ? 'blue' : 'red'} ${player.role}`;
+             const borderClasses = `border-solid border-2 rounded-full ${player.team === 0 ? 'border-blue-700' : 'border-red-700'}`;
               return (
-                  <li key={key} className={classNames}>
-                      <div className="flex items-center justify-center bg-gray-300 text-white-700 text-sm font-bold">
-                          <span className="playertag inline-block bg-gray-200 rounded-full px-3 text-sm font-semibold text-gray-700">{player.name}</span>
+                  <li key={key} className="w-12 h-12 block">
+                      <div className={`tooltip w-12 h-12 relative flex items-center justify-center bg-gray-300 text-white-700 text-sm font-bold duration-150 ${borderClasses}`}>
+                          <span className="flex items-center justify-center absolute uppercase text-sm font-bold text-gray-700 block w-full h-full">
+                              {player.role === 'spy' ? 'spy': 'sm'}
+                          </span>
+                          <span className={`tooltip-text mt-12 w-48 bg-gray-200 rounded-full px-3 text-sm font-semibold text-gray-700 ${borderClasses}`}>
+                            {player.name}
+                          </span>
                       </div>
                   </li>
               )

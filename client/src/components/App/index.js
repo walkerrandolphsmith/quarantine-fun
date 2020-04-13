@@ -4,7 +4,6 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import './App.css';
 import { Architect } from '../Architect';
 import { GameFinder } from '../GameFinder';
 import { Lobby } from '../Lobby';

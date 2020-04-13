@@ -1,0 +1,42 @@
+.circle-container {
+    width: 20em;
+    height: 20em;
+  }
+  
+  .circle-container > * {
+    top: 50%;
+    left: 50%;
+  }
+  
+  .circle-container > *:nth-of-type(1) {
+    -webkit-transform: rotate(0deg) translate(10em) rotate(0deg);
+            transform: rotate(0deg) translate(10em) rotate(0deg);
+  }
+  .circle-container > *:nth-of-type(2) {
+    -webkit-transform: rotate(45deg) translate(10em) rotate(-45deg);
+            transform: rotate(45deg) translate(10em) rotate(-45deg);
+  }
+  .circle-container > *:nth-of-type(3) {
+    -webkit-transform: rotate(90deg) translate(10em) rotate(-90deg);
+            transform: rotate(90deg) translate(10em) rotate(-90deg);
+  }
+  .circle-container > *:nth-of-type(4) {
+    -webkit-transform: rotate(135deg) translate(10em) rotate(-135deg);
+            transform: rotate(135deg) translate(10em) rotate(-135deg);
+  }
+  .circle-container > *:nth-of-type(5) {
+    -webkit-transform: rotate(180deg) translate(10em) rotate(-180deg);
+            transform: rotate(180deg) translate(10em) rotate(-180deg);
+  }
+  .circle-container > *:nth-of-type(6) {
+    -webkit-transform: rotate(225deg) translate(10em) rotate(-225deg);
+            transform: rotate(225deg) translate(10em) rotate(-225deg);
+  }
+  .circle-container > *:nth-of-type(7) {
+    -webkit-transform: rotate(270deg) translate(10em) rotate(-270deg);
+            transform: rotate(270deg) translate(10em) rotate(-270deg);
+  }
+  .circle-container > *:nth-of-type(8) {
+    -webkit-transform: rotate(315deg) translate(10em) rotate(-315deg);
+            transform: rotate(315deg) translate(10em) rotate(-315deg);
+  }
