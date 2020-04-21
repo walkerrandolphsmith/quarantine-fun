@@ -5,7 +5,7 @@ exports.generateMap = function generateMap(first = CardTypes.BlUE) {
     const size = 25;
     const second = first === CardTypes.RED ? CardTypes.BLUE : CardTypes.RED;
     const emptyMap = [...Array(size).keys()];
-    const firstDeckSize = 7;
+    const firstDeckSize = 9;
     const secondDeckSize = firstDeckSize - 1;
     const spyDeckSize = firstDeckSize + secondDeckSize;
     const nonNeutralDeckSize = spyDeckSize + 1;
