@@ -17,7 +17,9 @@ function Board({ cards, onSelect, map, selections, realtimeselections }) {
             <Card
               key={index}
               text={card.text}
-              onClick={() => onSelect(index)}
+              onClick={() => {
+                onSelect(index)
+              }}
               owner={owner}
               hasBeenSelected={picks.includes(index)}
             />

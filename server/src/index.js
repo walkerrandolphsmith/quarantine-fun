@@ -13,7 +13,8 @@ const { port } = require('./environment');
 
 configureDatabase();
 const app = express();
-configureSessionStorage(app);
+const sessionParser = configureSessionStorage(app);
+app.use(sessionParser);
 
 const assetsPath = path.resolve(__dirname, '..', '..', 'client', 'build');
 const entrypoint = path.resolve(assetsPath, 'index.html');
@@ -47,7 +48,7 @@ function wrapAsync(routeHandler) {
 }
 
 const server = http.createServer(app);
-const socketManager = createSocketsManager(server);
+const socketManager = createSocketsManager(server, sessionParser);
 socketManager.on('cardselection', gameController.handleCardSelection)
 socketManager.on('playeradded', gameController.handlerPlayerAdded)
 socketManager.on('gamestarted', gameController.handleGameStarted)

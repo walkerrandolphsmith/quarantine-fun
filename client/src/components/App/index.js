@@ -73,6 +73,13 @@ export class App extends React.Component {
     client.onmessage = (message) => {
       try {
         var payload = JSON.parse(message.data);
+        if (payload.type === "gameover") {
+          const selections = payload.map.reduce((selections, value, index) => ({
+            ...selections,
+            [index]: value
+          }), {});
+          this.setState(_ => ({ selections, winner: payload.winner }));
+        }
         if (payload.type === "revealcard") {
           this.setState(state => ({ selections: { ...state.selections, [payload.index]: payload.value }, winner: payload.winner }))
         }

@@ -1,6 +1,7 @@
 const gameService = require('../services/game.service');
 const { log } = require('../services/log.service');
 const { Phases } = require('../constants');
+const { getPlayerFromGameSession, addPlayerToGameSession } = require('../services/session.service');
 
 exports.handleStaticRoute = (route, entryPoint) => (req, res) => {
     const gameId = req.params.id;
@@ -49,25 +50,6 @@ exports.persistsGame = (req, res) => {
         .then(game => res.send(game))
 }
 
-function getPlayerFromGameSession (req, gameId) {
-    const sessionsByGameId = req.session.sessionsByGameId || {};
-    const name = sessionsByGameId[gameId];
-    return name;
-}
-
-function addPlayerToGameSession(req, gameId, name) {
-    if (!req.session.sessionsByGameId) {
-        req.session.sessionsByGameId = {
-            [gameId]: name
-        }
-    } else {
-        const session = req.session.sessionsByGameId[gameId];
-        if (!session) {
-            req.session.sessionsByGameId[gameId] = name;
-        }
-    }
-}
-
 exports.getGame = (req, res) => {
     const gameId = req.params.id;
     const name = getPlayerFromGameSession(req, gameId);
@@ -98,9 +80,9 @@ exports.startGame = async (req, res) => {
         .then(_ => res.send({}))
 }
 
-exports.handleCardSelection = (payload) => {
+exports.handleCardSelection = (payload, player) => {
     const { gameId, index } = payload;
-    return gameService.handleCardSelection(gameId, index)
+    return gameService.handleCardSelection(gameId, index, player)
 }
 
 exports.handlerPlayerAdded = (payload) => {

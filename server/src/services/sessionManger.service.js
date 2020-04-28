@@ -12,7 +12,7 @@ exports.configureSessionStorage = function(app) {
     store.on('error', log);
 
     app.set('trust proxy', 1)
-    app.use(require('express-session')({
+    return require('express-session')({
         secret: sessionSecret,
         cookie: {
           maxAge: 1000 * 60 * 60 * 24 * 7
@@ -21,5 +21,5 @@ exports.configureSessionStorage = function(app) {
         resave: true,
         saveUninitialized: true,
         secure: nodeENV === 'production'
-    }))
+    });
 }

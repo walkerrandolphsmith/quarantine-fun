@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { getCards } = require('./card.service');
 const { generateMap, revealMap } = require('./map.service');
-const { Teams, Roles, Phases } = require('../constants');
+const { Teams, Roles, Phases, CardTypes } = require('../constants');
 const Game = require('../models/Game');
 
 const getCandidateGame = (category = null) => {
@@ -148,18 +148,24 @@ exports.branch = gameId => {
         })
 }
 
-exports.handleCardSelection = (gameId, selection) => {
+exports.handleCardSelection = (gameId, selection, playerName) => {
     return Game
     .findByIdAndUpdate(gameId, { $push: { selections: selection } })
     .then(() => {
         return Game.findById(gameId)
         .then(game => {
+            const deathCardIndex = game.map.indexOf(CardTypes.DEATH);
+            const isDeathCard = deathCardIndex === selection;
             const redCardIndexes = game.map.map((card, index) => card === Teams.RED ? index : null).filter(index => index !== null);
             const blueCardIndexes = game.map.map((card, index) => card === Teams.BLUE ? index : null).filter(index => index !== null);
             const redWins = redCardIndexes.every(index => game.selections.includes(index));
             const blueWins = blueCardIndexes.every(index => game.selections.includes(index));
 
             const winner = (() => {
+                if (isDeathCard) {
+                    const currentPlayer = game.players.find(player => player.name === playerName);
+                    return currentPlayer.team === Teams.RED ? Teams.BLUE : Teams.RED;
+                }
                 if (redWins) return Teams.RED;
                 if (blueWins) return Teams.BLUE;
                 return -1
@@ -174,8 +180,10 @@ exports.handleCardSelection = (gameId, selection) => {
                     }
                 )
                 .then(_ => {
-                    const reply = { type: 'revealcard', index: selection, value: game.map[selection], winner }
-                    return reply;
+                    if (winner >= 0) {
+                        return { type: 'gameover', map: game.map, winner }
+                    }
+                    return { type: 'revealcard', index: selection, value: game.map[selection], winner }
                 })
         })
     })

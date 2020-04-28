@@ -9,6 +9,7 @@ exports.generateMap = function generateMap(first = CardTypes.BlUE) {
     const secondDeckSize = firstDeckSize - 1;
     const spyDeckSize = firstDeckSize + secondDeckSize;
     const nonNeutralDeckSize = spyDeckSize + 1;
+    const deathCardIndex = spyDeckSize;
 
     const positions = fisherYates(emptyMap, nonNeutralDeckSize);
 
@@ -19,7 +20,7 @@ exports.generateMap = function generateMap(first = CardTypes.BlUE) {
     for(let i = firstDeckSize; i < spyDeckSize; i++) {
         map[positions[i]] = second;
     }
-    map[positions[spyDeckSize]] = CardTypes.DEATH;
+    map[positions[deathCardIndex]] = CardTypes.DEATH;
     return map;
 };
 
