@@ -18,6 +18,12 @@ function getClient() {
   return client;
 }
 
+function sleep(time) {
+  return new Promise(resolve => {
+      setTimeout(resolve, time)
+  })
+}
+
 export class App extends React.Component {
   constructor() {
     super();
@@ -73,45 +79,14 @@ export class App extends React.Component {
     client.onmessage = (message) => {
       try {
         var payload = JSON.parse(message.data);
-        if (payload.type === "gameover") {
-          const selections = payload.map.reduce((selections, value, index) => ({
-            ...selections,
-            [index]: value
-          }), {});
-          this.setState(_ => ({ selections, winner: payload.winner }));
-        }
-        if (payload.type === "revealcard") {
-          this.setState(state => ({ selections: { ...state.selections, [payload.index]: payload.value }, winner: payload.winner }))
-        }
-        if (payload.type === "playeradded") {
-          this.setState(_ => ({ players: [...payload.players] }))
-        }
-        if (payload.type === "branch") {
-          const { previousGameId, nextGameId } = payload;
-          fetch(`/api/join`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                previousGameId,
-                nextGameId
-              })
-            })
-            .then(r => r.json())
-            .then(_ => {
-              window.location.href = `/lobby/${nextGameId}`;
-            })
-            .catch(error => {
-              console.log(error)
-            })
-        }
-        if (payload.type === 'gamestarted') {
-          window.location.href = `/game/${payload.gameId}`;
+        try {
+          const handlerName = this.handlerNameByType[payload.type];
+          this[handlerName](payload);
+        } catch (e) {
+          console.log('Unknown handler', payload.type);
         }
       } catch (e) {
         console.log('This doesn\'t look like a valid JSON: ', message.data);
-        return;
       }
     }
   }
@@ -119,6 +94,62 @@ export class App extends React.Component {
   check = () => {
     const { client } = this.state;
     if (!client || client.readyState === WebSocket.CLOSED) this.connect();
+  }
+
+  handlerNameByType = {
+    gameover: 'handleGameOver',
+    revealcard: 'handleRevealCard',
+    playeradded: 'handlePlayerAdded',
+    branch: 'handleBranch',
+    gamestarted: 'handleGameStarted',
+  }
+
+  handleRevealCard = (payload) => {
+    this.setState(state => ({ selections: { ...state.selections, [payload.index]: payload.value }, winner: payload.winner }))
+  }
+
+  handlePlayerAdded = (payload) => {
+    this.setState(_ => ({ players: [...payload.players] }))
+  }
+
+  handleGameOver = (payload) => {
+    this.setState(state => ({ selections: { ...state.selections, [payload.index]: payload.value }, winner: payload.winner }))
+
+    payload.map
+      .map((value, index) => ({ index: index, value }))
+      .filter(card => this.state.selections[card.index] !== 3)
+      .reduce((promise, card) => {
+        return promise.then(() => {
+          return sleep(100).then(
+            _ => this.setState(state => ({ selections: { ...state.selections, [card.index]: card.value }  }))
+          )
+        })
+      }, Promise.resolve())
+  }
+
+  handleBranch = (payload) => {
+    const { previousGameId, nextGameId } = payload;
+      fetch(`/api/join`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            previousGameId,
+            nextGameId
+          })
+        })
+        .then(r => r.json())
+        .then(_ => {
+          window.location.href = `/lobby/${nextGameId}`;
+        })
+        .catch(error => {
+          console.log(error)
+        })
+  }
+
+  handleGameStarted = (payload) => {
+    window.location.href = `/game/${payload.gameId}`;
   }
 
   render() {

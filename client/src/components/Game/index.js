@@ -4,10 +4,8 @@ import { Loading } from '../Loading';
 import { Grid } from '../Grid';
 import { Card } from '../Card';
 import { Timer } from '../Timer'
-import './Game.css';
 
-function Board({ cards, onSelect, map, selections, realtimeselections }) {
-  const picks = [...selections, ...Object.keys(realtimeselections)].map(selection => parseInt(selection));
+function Board({ cards, onSelect, map, realtimeselections, picks }) {
   return (
     <Grid>
       {cards.map(
@@ -64,43 +62,6 @@ export function Game({ client, selections, winner }) {
 
   if(game == null) return <Loading />
 
-  const playersList = (teammates) => (
-      <ul className="inline-flex">
-          {teammates.map((player, key) => {
-             const borderClasses = `border-solid border-2 rounded-full ${player.team === 0 ? 'border-blue-700' : 'border-red-700'}`;
-              return (
-                  <li key={key} className="w-12 h-12 block">
-                      <div className={`tooltip w-12 h-12 relative flex items-center justify-center bg-gray-300 text-white-700 text-sm font-bold duration-150 ${borderClasses}`}>
-                          <span className="flex items-center justify-center absolute uppercase text-sm font-bold text-gray-700 block w-full h-full">
-                              {player.role === 'spy' ? 'spy': 'sm'}
-                          </span>
-                          <span className={`tooltip-text mt-12 w-48 bg-gray-200 rounded-full px-3 text-sm font-semibold text-gray-700 ${borderClasses}`}>
-                            {player.name}
-                          </span>
-                      </div>
-                  </li>
-              )
-          })}
-      </ul>
-  )
-
-  const redPlayers = playersList(game.players.filter(player => player.team === 1))
-  const bluePlayers = playersList(game.players.filter(player => player.team === 0))
-
-  const winnerValue = game.winner >= 0 ? game.winner : winner;
-  const hasWinner = winnerValue >= 0;
-
-  const firstTeamBackground = hasWinner
-    ? winnerValue === 0 ? 'bg-blue-700': 'bg-red-700'
-    : game.firstTeam === 0 ? 'bg-blue-700': 'bg-red-700'
-  const nav = (
-    <nav className={`${firstTeamBackground} p-2 mt-0 fixed w-full z-10 top-0`}>
-        <div className="container mx-auto flex flex-wrap items-center justify-between">
-          {bluePlayers}
-          {redPlayers}
-        </div>
-    </nav>
-  )
 
   function leave() {
     window.location.href = '/';
@@ -112,6 +73,9 @@ export function Game({ client, selections, winner }) {
       gameId
     }))
   }
+
+  const winnerValue = game.winner >= 0 ? game.winner : winner;
+  const hasWinner = winnerValue >= 0;
 
   const replayButtons = hasWinner && (
     <Fragment>
@@ -155,18 +119,73 @@ export function Game({ client, selections, winner }) {
       </button>
   );
 
+  const picks = [...game.selections, ...Object.keys(selections)].map(selection => parseInt(selection))
+
+  const firstTeamColor = hasWinner
+      ? winner === 0 ? 'border-blue-700': 'border-red-700'
+      : game.firstTeam === 0 ? 'border-blue-700': 'border-red-700'
+
+    const winnerName = winner === 0 ? 'Blue Team Wins': 'Red Team Wins'
+
+    const firstTeamDeckSize = 9;
+    const secondTeamDeckSize = 8;
+    
+    const blueTeamDeckSize = game.firstTeam === 0 ? firstTeamDeckSize : secondTeamDeckSize;
+    const redTeamDeckSize = game.firstTeam !== 0 ?  firstTeamDeckSize : secondTeamDeckSize;
+
+
+    const selectionsByTeam = game.cards.reduce((totals, _, index) => {
+        const owner = selections[index] !== undefined
+            ? selections[index]
+            : game.selections.includes(index)
+                ? game.map[index]
+                : -2;
+
+        if (owner === 0) totals.blue++;
+        if (owner === 1) totals.red++;
+        return totals;
+    }, { red: 0, blue: 0 })
+
+    const blueTeamRemainingDeckSize = blueTeamDeckSize - selectionsByTeam.blue;
+    const redTeamRemainingDeckSize = redTeamDeckSize - selectionsByTeam.red;
+
+    const nav = (
+      <nav className={`${firstTeamColor} border-solid border-b-2 bg-white p-2 mt-0 fixed w-full z-10 top-0`}>
+          <div className={`container mx-auto flex flex-wrap items-center ${hasWinner ? 'justify-center': 'justify-between'}`}>
+                {!hasWinner && (
+                    <Fragment>
+                        <span className="text-lg font-bold">
+                            {blueTeamRemainingDeckSize} Blue Cards Left
+                        </span>
+                        <div className="flex items-center justify-center">
+                            {timer}
+                            {startTimerButton}
+                        </div>
+                        <span className="text-lg font-bold">
+                            {redTeamRemainingDeckSize} Red Cards Left
+                        </span>
+                    </Fragment>
+                )}
+                {hasWinner && (
+                    <Fragment>
+                    <span className="text-lg font-bold mr-2">
+                        {winnerName}
+                    </span>
+                    {replayButtons}
+                    </Fragment>
+                )}
+          </div>
+      </nav>
+    )
+
   return (
     <Fragment>
       {nav}
-      <div className="mt-24">
-        <div className="flex items-center justify-center">
-          {replayButtons}
-          {timer}
-          {startTimerButton}
-        </div>
+      <div className="mt-16">
         <Board
           {...game}
           realtimeselections={selections}
+          picks={picks}
           onSelect={(index) => {
             client.send(JSON.stringify({
               index,

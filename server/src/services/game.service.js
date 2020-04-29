@@ -181,7 +181,7 @@ exports.handleCardSelection = (gameId, selection, playerName) => {
                 )
                 .then(_ => {
                     if (winner >= 0) {
-                        return { type: 'gameover', map: game.map, winner }
+                        return { type: 'gameover', index: selection, value: game.map[selection], winner, map: game.map }
                     }
                     return { type: 'revealcard', index: selection, value: game.map[selection], winner }
                 })
