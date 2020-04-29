@@ -24,7 +24,7 @@ export function Card({ text, onClick, owner, hasBeenSelected, isReadonly }) {
         onClick={onClick}
       >
         <div className="md:text-left">
-          <h2 className={`text-2xl break-all ${pointerClass} ${textClass}`}>{text}</h2>
+          <h2 className={`text-xs sm:text-sm md:text-base lg:text-lg xl:text-2xl break-all ${pointerClass} ${textClass}`}>{text}</h2>
         </div>
       </div>
     )
