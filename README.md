@@ -1,3 +1,6 @@
+# Play
+Play the game at https://gitreabse-codenames.herokuapp.com/
+
 # Environment variables
 In order for the services to run you must provide .env files for a specific environment that contains configrations and secrets the application requires. We will not include the .env files in the repository beacuse they contain secrets we don't want compromised via git history. Therefore the files will be ignored from git using the .gitignore file.
 
